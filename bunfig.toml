@@ -1,0 +1,13 @@
+[run]
+shell = "bun"
+bun = true
+
+[test]
+coverageThreshold = 0.9
+coverageReporter = ["text", "lcov"]
+randomize = true
+rerunEach = 2
+
+[loader]
+".yaml" = "text"
+".yml" = "text"
