@@ -6,19 +6,21 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.0",
     "@types/bun": "latest",
-    "ultracite": "7.2.4"
+    "ultracite": "7.2.4",
+    "lefthook": "^2.1.2"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
   },
   "scripts": {
+    "build": "bun build src/bootstrap.ts --outdir dist --target bun",
+    "start": "bun dist/bootstrap.js",
     "test": "bun test",
     "check": "ultracite check",
     "fix": "ultracite fix",
     "prepare": "lefthook install"
   },
   "dependencies": {
-    "lefthook": "^2.1.2",
     "ulid": "^3.0.2",
     "zod": "^4.3.6"
   }

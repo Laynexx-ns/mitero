@@ -5,13 +5,13 @@
     "": {
       "name": "mitero",
       "dependencies": {
-        "lefthook": "^2.1.2",
         "ulid": "^3.0.2",
         "zod": "^4.3.6",
       },
       "devDependencies": {
         "@biomejs/biome": "2.4.0",
         "@types/bun": "latest",
+        "lefthook": "^2.1.2",
         "ultracite": "7.2.4",
       },
       "peerDependencies": {

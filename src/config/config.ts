@@ -26,7 +26,13 @@ const normalizePathes = (cfg: MiteroConfig): MiteroConfig => {
 			if (!watcher) {
 				continue;
 			}
-			watcher.watchPath = path.resolve(watcher.watchPath);
+			const base =
+				process.env.WATCH_ROOT ??
+				path.dirname(path.resolve(process.env.CONFIG_PATH ?? "config.yml"));
+
+			watcher.watchPath = path.isAbsolute(watcher.watchPath)
+				? watcher.watchPath
+				: path.resolve(base, watcher.watchPath);
 		}
 	}
 

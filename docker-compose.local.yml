@@ -1,0 +1,11 @@
+services:
+  mitero:
+    build: .
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      WATCH_ROOT: /host
+      CONFIG_PATH: /app/config.yml
+    volumes:
+      - ./config.yml:/app/config.yml:ro
+      - ${MOUNT_PATH:?set MOUNT_PATH}:/host:ro
