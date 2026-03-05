@@ -48,6 +48,7 @@ const _workers: EventWorker[] = [];
 for (let i = 0; i < config.workers; i++) {
 	const worker = new EventWorker({
 		exporters,
+		workerId: i,
 	});
 	runInBackground(worker.listenQueue(processor.batchQueue));
 }

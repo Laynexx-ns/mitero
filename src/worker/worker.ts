@@ -5,6 +5,7 @@ import type { AsyncQueue } from "../queue";
 
 export interface EventWorkerConfig {
 	exporters: Exporter[];
+	workerId: number;
 }
 
 export class EventWorker {
@@ -24,10 +25,16 @@ export class EventWorker {
 	}
 
 	processEvent(event: FileExportEvent) {
+		console.log(
+			`worker ${this.config.workerId} started processing: ${event.id}`
+		);
 		const availableExpoters = this.config.exporters.filter((item) =>
 			event.exporters.includes(item.name)
 		);
 		for (const exporter of availableExpoters) {
+			console.log(
+				`worker ${this.config.workerId} exporting: ${event.id} using ${exporter.name} exporter`
+			);
 			exporter.fn(event);
 		}
 	}
