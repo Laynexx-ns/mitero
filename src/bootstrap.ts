@@ -21,7 +21,7 @@ function setupWatchers(watcherConfigs: WatcherConfigs) {
 				name,
 			},
 			(event) => {
-				console.log(`sending ${event} to eventQueue`);
+				console.log(`sending ${event.id} to eventQueue`);
 				eventQueue.push(event);
 			}
 		);

@@ -1,11 +1,20 @@
 workers: 5
 batchSize: 2
-batchTimeout: 5000
+batchTimeout: 1000
 
 watchers:
   watcher-1:
     listen: "*"
-    watchPath: "./"
+    watchPath: "./test"
+    processExisting: false
+    recursive: true
+    tag: test_tag
+    exporters:
+      - yandex-exporter
+    deleteOnProcessEnd: true
+  watcher-2:
+    listen: "*"
+    watchPath: "./another_test"
     processExisting: false
     recursive: true
     tag: test_tag

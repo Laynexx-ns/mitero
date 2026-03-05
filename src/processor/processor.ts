@@ -70,7 +70,6 @@ export class Processor {
 	protected setFlushTimeout(): void {
 		this.timeout = setTimeout(() => {
 			this.flush();
-			console.log("timeout emitted");
 		}, this.config.batchTimeout);
 	}
 }

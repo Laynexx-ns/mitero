@@ -49,7 +49,6 @@ export class FileWatcher implements Watcher {
 				recursive: this.config.recursive,
 			},
 			(event, filename) => {
-				console.log(event);
 				const exporterEvent: FileExportEvent = {
 					id: ulid(),
 					exporters: this.config.exporters,
