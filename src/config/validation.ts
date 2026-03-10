@@ -5,6 +5,7 @@ const MiteroConfigSchema = z.object({
 	workers: z.number().min(1).max(100).default(5),
 	batchSize: z.number().min(1).default(1),
 	batchTimeout: z.number().min(10).default(200),
+	bounceTimeout: z.number().min(10).default(100),
 	watchers: z.record(
 		z.string(),
 		z.object({
@@ -19,8 +20,13 @@ const MiteroConfigSchema = z.object({
 	),
 });
 
-export function assertConfigIsValid(
-	config: unknown
-): asserts config is MiteroConfig {
-	MiteroConfigSchema.parse(config);
+export function parseConfig(config: unknown): z.infer<MiteroConfig> {
+	const result = MiteroConfigSchema.safeParse(config);
+
+	if (!result.success) {
+		console.error(result.error);
+		process.exit(1);
+	}
+
+	return result.data;
 }
