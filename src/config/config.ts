@@ -1,23 +1,22 @@
 import path from "node:path";
 import ymlConfig from "../../config.yml";
 import type { WatcherConfig } from "../watcher";
-import { parseConfig } from "./validation";
+import { assertConfigIsValid } from "./validation";
 
 export type WatcherName = string;
 export type WatcherConfigs = Record<WatcherName, WatcherConfig>;
 export interface MiteroConfig {
 	batchSize: number;
 	batchTimeout: number;
-	bounceTimeout: number;
 	watchers: WatcherConfigs;
 	workers: number;
 }
 
 export const loadConfig = (): MiteroConfig => {
 	const loadedConfig = Bun.YAML.parse(ymlConfig) as unknown;
-	const config = parseConfig(loadedConfig) as MiteroConfig;
+	assertConfigIsValid(loadedConfig);
 
-	return normalizePathes(config);
+	return normalizePathes(loadedConfig);
 };
 
 const normalizePathes = (cfg: MiteroConfig): MiteroConfig => {

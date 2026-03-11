@@ -1,12 +1,11 @@
 workers: 5
 batchSize: 2
 batchTimeout: 1000
-bounceTimeout: 1000
 
 watchers:
   watcher-1:
     listen: "*"
-    watchPath: "./test"
+    watchPath: "."
     processExisting: false
     recursive: true
     tag: test_tag

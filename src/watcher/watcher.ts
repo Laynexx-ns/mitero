@@ -1,7 +1,11 @@
 import { type WatchEventType, watch } from "node:fs";
 import { ulid } from "ulid";
 import type { FileExportEvent } from "../events";
-import { WATCHER_ERRORS } from "./errors";
+
+export const WATCHER_ERRORS = {
+	WATCHER_NOT_EXISTS: "watcher not exists",
+};
+export type WatcherError = (typeof WATCHER_ERRORS)[keyof typeof WATCHER_ERRORS];
 
 export interface WatcherConfig {
 	deleteOnProcessEnd: boolean;
@@ -31,7 +35,6 @@ export class FileWatcher implements Watcher {
 	watcher: ReturnType<typeof watch> | null = null;
 	name: string;
 	flush: WatcherFlushFunction;
-	lastEvent: FileExportEvent | null = null;
 
 	constructor(props: WatcherProps, flush: WatcherFlushFunction) {
 		this.config = props.config;
@@ -59,7 +62,6 @@ export class FileWatcher implements Watcher {
 					path: this.config.watchPath,
 				};
 
-				this.lastEvent = exporterEvent;
 				this.flush(exporterEvent);
 			}
 		);
