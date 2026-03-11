@@ -70,13 +70,16 @@ for (let i = 0; i < config.workers; i++) {
 	runInBackground(worker.listenQueue(processor.batchQueue));
 }
 
-function waitForSignal(signal: NodeJS.Signals = "SIGINT") {
+function waitForSignal(signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM"]) {
 	return new Promise<void>((resolve) => {
-		process.once(signal, resolve);
+		const handler = () => {
+			signals.forEach((signal) => process.off(signal, handler));
+			resolve();
+		};
+		signals.forEach((signal) => process.once(signal, handler));
 	});
 }
 
-await waitForSignal().then(() => {
-	autoDebouncer.stop();
-	processor.stop();
-});
+await waitForSignal();
+autoDebouncer.stop();
+processor.stop();
