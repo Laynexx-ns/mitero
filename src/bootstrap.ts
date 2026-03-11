@@ -80,6 +80,8 @@ function waitForSignal(signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM"]) {
 	});
 }
 
-await waitForSignal();
-autoDebouncer.stop();
-processor.stop();
+await waitForSignal().then(() => {
+	autoDebouncer.stop();
+	processor.stop();
+	watchers.forEach(w => w.stop());
+});
