@@ -58,7 +58,6 @@ export class Processor {
 				}
 			}
 		} finally {
-			this._processing = false;
 			this.stop();
 		}
 	}
