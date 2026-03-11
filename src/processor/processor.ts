@@ -67,10 +67,13 @@ export class Processor {
 			throw new Error(PROCESSOR_ERRORS.NOT_ACTIVE_PROCESSING);
 		}
 		this._processing = false;
-		if (this.timeout) {
+		if (this.currentBatch) {
+			this.flush();
+		} else if (this.timeout) {
 			clearInterval(this.timeout);
 		}
 		this.timeout = null;
+		this.currentBatch = null;
 	}
 
 	protected isCurrentBatchFullfilled(): boolean {
