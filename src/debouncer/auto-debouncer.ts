@@ -20,18 +20,25 @@ export class AutoDebouncer<KeyType, T> extends Debouncer<KeyType, T> {
 	}
 
 	debounce(): void {
-		this.flushInterval = setInterval(() => this.send(), this.interval);
-		this.send();
+		console.log(this.interval);
+		if (this.flushInterval) {
+			return;
+		}
+		this.flushInterval = setInterval(() => {
+			this.send();
+		}, this.interval);
 	}
 
 	stop(): void {
 		if (this.flushInterval) {
 			clearInterval(this.flushInterval);
+			this.flushInterval = null;
 		}
 	}
 
 	protected send(): void {
 		const items = this.flush();
+		console.log("items: ", items);
 		items.forEach((item) => {
 			this.pushSource.push(item);
 		});

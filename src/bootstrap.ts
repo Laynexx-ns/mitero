@@ -12,7 +12,7 @@ import { EventWorker } from "./worker";
 const config = loadConfig();
 
 const eventQueue = new AsyncQueue<FileExportEvent>();
-const timedDebouncer = new AutoDebouncer<string, FileExportEvent>({
+const autoDebouncer = new AutoDebouncer<string, FileExportEvent>({
 	pushSource: eventQueue,
 	interval: config.bounceTimeout,
 });
@@ -37,7 +37,7 @@ function setupWatchers(watcherConfigs: WatcherConfigs) {
 				);
 				console.log(`fullpath: ${fullPath}`);
 
-				timedDebouncer.push(fullPath, event);
+				autoDebouncer.push(fullPath, event);
 			}
 		);
 
@@ -48,7 +48,7 @@ function setupWatchers(watcherConfigs: WatcherConfigs) {
 	});
 }
 
-timedDebouncer.debounce();
+autoDebouncer.debounce();
 
 setupWatchers(config.watchers);
 
@@ -71,7 +71,12 @@ for (let i = 0; i < config.workers; i++) {
 }
 
 function waitForSignal(signal: NodeJS.Signals = "SIGINT") {
-	return new Promise<void>((resolve) => process.once(signal, resolve));
+	return new Promise<void>((resolve) => {
+		process.once(signal, resolve);
+	});
 }
 
-await waitForSignal();
+await waitForSignal().then(() => {
+	autoDebouncer.stop();
+	processor.stop();
+});

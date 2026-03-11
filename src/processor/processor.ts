@@ -1,6 +1,7 @@
 import { ulid } from "ulid";
 import type { FileExportEvent } from "../events";
 import { AsyncQueue } from "../queue";
+import { PROCESSOR_ERRORS } from "./errors";
 
 export interface FileEventBatch {
 	events: FileExportEvent[];
@@ -17,10 +18,15 @@ export interface ProcessorConfig {
 
 export class Processor {
 	readonly batchQueue: AsyncQueue<FileEventBatch>;
-	protected config: ProcessorConfig;
 
-	timeout: Timer | null = null;
-	currentBatch: FileEventBatch | null = null;
+	protected _processing = false;
+	protected config: ProcessorConfig;
+	protected timeout: Timer | null = null;
+	protected currentBatch: FileEventBatch | null = null;
+
+	get processing(): boolean {
+		return this._processing;
+	}
 
 	constructor(config: ProcessorConfig) {
 		this.config = config;
@@ -28,23 +34,44 @@ export class Processor {
 	}
 
 	async process(queue: AsyncQueue<FileExportEvent>) {
-		while (true) {
-			const event = await queue.shift();
-
-			if (this.currentBatch === null) {
-				this.currentBatch = {
-					id: ulid(),
-					events: [event],
-				};
-				this.setFlushTimeout();
-			} else {
-				this.push(event);
-			}
-
-			if (this.isCurrentBatchFullfilled()) {
-				this.flush();
-			}
+		if (this._processing) {
+			throw new Error(PROCESSOR_ERRORS.ALREADY_PROCESSING);
 		}
+		this._processing = true;
+
+		try {
+			while (this._processing) {
+				const event = await queue.shift();
+
+				if (this.currentBatch === null) {
+					this.currentBatch = {
+						id: ulid(),
+						events: [event],
+					};
+					this.setFlushTimeout();
+				} else {
+					this.push(event);
+				}
+
+				if (this.isCurrentBatchFullfilled()) {
+					this.flush();
+				}
+			}
+		} finally {
+			this._processing = false;
+			this.stop();
+		}
+	}
+
+	stop() {
+		if (!this._processing) {
+			throw new Error(PROCESSOR_ERRORS.NOT_ACTIVE_PROCESSING);
+		}
+		this._processing = false;
+		if (this.timeout) {
+			clearInterval(this.timeout);
+		}
+		this.timeout = null;
 	}
 
 	protected isCurrentBatchFullfilled(): boolean {

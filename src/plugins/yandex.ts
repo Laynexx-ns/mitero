@@ -18,6 +18,8 @@ const yandexExportFunction = async (event: FileExportEvent) => {
 	if (event.filename) {
 		const file = openFile(buildFullFilePath(event.path, event.filename));
 
+		console.log(await file.text());
+
 		const TOKEN = process.env.YANDEX_API_TOKEN;
 		if (!TOKEN) {
 			throw new Error("env variable is null");

@@ -1,7 +1,7 @@
 workers: 5
-batchSize: 2
-batchTimeout: 1000
-bounceTimeout: 1000
+batchSize: 80
+batchTimeout: 10000
+bounceTimeout: 5000
 
 watchers:
   watcher-1:
