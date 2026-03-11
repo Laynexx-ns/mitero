@@ -3,6 +3,15 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "build": "bun build src/bootstrap.ts --outdir dist --target bun",
+    "start": "bun dist/bootstrap.js",
+    "dev": "bun src/bootstrap.js",
+    "test": "bun test",
+    "checdok": "ultracite check",
+    "fix": "ultracite fix",
+    "prepare": "lefthook install"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.4.0",
     "@types/bun": "latest",
@@ -11,14 +20,6 @@
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
-  },
-  "scripts": {
-    "build": "bun build src/bootstrap.ts --outdir dist --target bun",
-    "start": "bun dist/bootstrap.js",
-    "test": "bun test",
-    "check": "ultracite check",
-    "fix": "ultracite fix",
-    "prepare": "lefthook install"
   },
   "dependencies": {
     "ulid": "^3.0.2",

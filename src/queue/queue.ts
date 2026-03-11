@@ -1,10 +1,4 @@
-export const ASYNC_QUEUE_ERRORS = {
-	QUEUE_IS_CLOSED: "queue is closed",
-	NO_ITEMS: "no items in queue",
-	NO_ITEMS_TO_MODIFY: "no items in queue to modify",
-} as const;
-export type QueueError =
-	(typeof ASYNC_QUEUE_ERRORS)[keyof typeof ASYNC_QUEUE_ERRORS];
+import { ASYNC_QUEUE_ERRORS } from "./errors";
 
 export interface Waiting<T> {
 	reject: (e: unknown) => void;
@@ -23,12 +17,11 @@ export class AsyncQueue<T> {
 			yield await this.shift();
 		}
 	}
-
 	push(el: T): void {
 		if (this.closed) {
 			throw new Error(ASYNC_QUEUE_ERRORS.QUEUE_IS_CLOSED);
 		}
-		const waiting = this.waitings.shift() as Waiting<T>;
+		const waiting = this.waitings.shift();
 		if (!waiting) {
 			this.items.push(el);
 			return;
@@ -45,9 +38,9 @@ export class AsyncQueue<T> {
 			throw new Error(ASYNC_QUEUE_ERRORS.QUEUE_IS_CLOSED);
 		}
 
-		const item = this.items.shift();
-		if (item !== undefined) {
-			return item;
+		const item = this.items.shift() as T | undefined;
+		if (item !== undefined && item !== null) {
+			return new Promise((resolve) => resolve(item));
 		}
 		return new Promise<T>((resolve, reject) =>
 			this.waitings.push({ resolve, reject })

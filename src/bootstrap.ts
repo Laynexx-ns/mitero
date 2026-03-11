@@ -1,6 +1,8 @@
 import { runInBackground } from "./background";
 import { loadConfig, type WatcherConfigs } from "./config";
+import { AutoDebouncer } from "./debouncer";
 import type { FileExportEvent } from "./events";
+import { buildFullFilePath } from "./file";
 import { YandexExporter } from "./plugins";
 import { Processor } from "./processor";
 import { AsyncQueue } from "./queue";
@@ -10,6 +12,10 @@ import { EventWorker } from "./worker";
 const config = loadConfig();
 
 const eventQueue = new AsyncQueue<FileExportEvent>();
+const timedDebouncer = new AutoDebouncer<string, FileExportEvent>({
+	pushSource: eventQueue,
+	interval: config.bounceTimeout,
+});
 
 // watchers setup and run
 const watchers: FileWatcher[] = [];
@@ -21,17 +27,28 @@ function setupWatchers(watcherConfigs: WatcherConfigs) {
 				name,
 			},
 			(event) => {
-				console.log(`sending ${event.id} to eventQueue`);
-				eventQueue.push(event);
+				console.log(
+					` ${new Date().toLocaleTimeString("ru-RU")} | watcher: ${name} sending ${event.id} to eventQueue | type: ${event.event}`
+				);
+
+				const fullPath: string = buildFullFilePath(
+					event.path,
+					event.filename ?? ""
+				);
+				console.log(`fullpath: ${fullPath}`);
+
+				timedDebouncer.push(fullPath, event);
 			}
 		);
 
-		console.log(watcher.config.watchPath);
+		console.log(`watcher ${name} enabled | looking for: ${config.watchPath}`);
 		watcher.watch();
 
 		watchers.push(watcher);
 	});
 }
+
+timedDebouncer.debounce();
 
 setupWatchers(config.watchers);
 
