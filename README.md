@@ -90,7 +90,8 @@ bun src/bootstrap.ts
 
 ## Architecture
 
-<img width="1913" height="580" alt="image" src="https://github.com/user-attachments/assets/8c465d20-f9e8-4c4d-b15e-3f7f73986b51" />
+<img width="1781" height="591" alt="image" src="https://github.com/user-attachments/assets/353dbdad-0e02-46d0-9851-d711beaba681" />
+
 
 
 ___ 
